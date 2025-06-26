@@ -38,16 +38,10 @@ def fetch_akutagawa_story():
         
         if main_text:
             lines = []
-            for p in main_text.find_all(['p', 'br']):
-                if p.name == 'p':
-                    text = p.get_text().strip()
-                    if text:
-                        lines.append(text)
-                elif p.name == 'br':
-                    if p.next_sibling and isinstance(p.next_sibling, str):
-                        text = p.next_sibling.strip()
-                        if text:
-                            lines.append(text)
+            for p in main_text.find_all('p'):
+                text = p.get_text().strip()
+                if text:
+                    lines.append(text)
             
             if not lines:
                 text_content = main_text.get_text()
