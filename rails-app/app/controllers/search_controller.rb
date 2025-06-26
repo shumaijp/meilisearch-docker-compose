@@ -1,6 +1,8 @@
 require 'httparty'
 
 class SearchController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: [:search]
+  
   def index
     # Render the main search page
   end
