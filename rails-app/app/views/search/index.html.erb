@@ -1,0 +1,93 @@
+<div id="app" class="container">
+  <h1>芥川龍之介作品検索 / Akutagawa Story Search</h1>
+  
+  <div>
+    <input 
+      type="text" 
+      v-model="searchQuery" 
+      @keyup.enter="performSearch"
+      placeholder="検索キーワードを入力してください / Enter search keywords..."
+      class="search-box"
+    />
+    <button @click="performSearch" class="search-button" :disabled="loading">
+      {{ loading ? '検索中...' : '検索 / Search' }}
+    </button>
+  </div>
+
+  <div class="results-area">
+    <div v-if="loading" class="loading">
+      検索中です... / Searching...
+    </div>
+    
+    <div v-else-if="error" class="error">
+      エラー / Error: {{ error }}
+    </div>
+    
+    <div v-else-if="results.length === 0 && hasSearched" class="no-results">
+      検索結果が見つかりませんでした / No results found
+    </div>
+    
+    <div v-else-if="results.length > 0">
+      <div style="margin-bottom: 15px; color: #666;">
+        {{ totalResults }}件の結果が見つかりました / Found {{ totalResults }} results
+      </div>
+      
+      <div v-for="result in results" :key="result.id" class="result-item">
+        <div class="result-text">{{ result.text }}</div>
+        <div class="result-meta">行番号 / Line: {{ result.line_number }}</div>
+      </div>
+    </div>
+    
+    <div v-else style="text-align: center; color: #999; padding: 20px;">
+      上の検索ボックスにキーワードを入力して検索してください<br>
+      Enter keywords in the search box above to search
+    </div>
+  </div>
+</div>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+  data() {
+    return {
+      searchQuery: '',
+      results: [],
+      totalResults: 0,
+      loading: false,
+      error: null,
+      hasSearched: false
+    }
+  },
+  methods: {
+    async performSearch() {
+      if (!this.searchQuery.trim()) {
+        this.error = '検索キーワードを入力してください / Please enter search keywords';
+        return;
+      }
+
+      this.loading = true;
+      this.error = null;
+      this.hasSearched = true;
+
+      try {
+        const response = await axios.post('/search', {
+          query: this.searchQuery
+        });
+
+        this.results = response.data.results || [];
+        this.totalResults = response.data.total || 0;
+        
+        if (response.data.error) {
+          this.error = response.data.message || response.data.error;
+        }
+      } catch (error) {
+        this.error = 'サーバーエラーが発生しました / Server error occurred';
+        console.error('Search error:', error);
+      } finally {
+        this.loading = false;
+      }
+    }
+  }
+}).mount('#app');
+</script>

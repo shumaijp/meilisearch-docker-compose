@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  meilisearch:
+    image: getmeili/meilisearch:v1.5
+    container_name: meilisearch
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      - MEILI_ENV=development
+    volumes:
+      - meilisearch_data:/meili_data
+    networks:
+      - app-network
+
+  rails-app:
+    build:
+      context: ./rails-app
+      dockerfile: Dockerfile
+    container_name: rails-app
+    ports:
+      - "3000:3000"
+    environment:
+      - MEILISEARCH_URL=http://meilisearch:7700
+      - MEILISEARCH_KEY=${MEILISEARCH_KEY}
+    depends_on:
+      - meilisearch
+    volumes:
+      - ./rails-app:/app
+    networks:
+      - app-network
+
+  data-loader:
+    build:
+      context: ./data-loader
+      dockerfile: Dockerfile
+    container_name: data-loader
+    environment:
+      - MEILISEARCH_URL=http://meilisearch:7700
+      - MEILISEARCH_KEY=${MEILISEARCH_KEY}
+    depends_on:
+      - meilisearch
+    networks:
+      - app-network
+
+volumes:
+  meilisearch_data:
+
+networks:
+  app-network:
+    driver: bridge
