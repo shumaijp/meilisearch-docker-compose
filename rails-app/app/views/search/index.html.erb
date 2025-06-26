@@ -1,17 +1,13 @@
 <div id="app" class="container">
-  <h1>芥川龍之介作品検索 / Akutagawa Story Search</h1>
+  <h1>作品検索 / Story Search</h1>
   
   <div>
     <input 
       type="text" 
       v-model="searchQuery" 
-      @keyup.enter="performSearch"
       placeholder="検索キーワードを入力してください / Enter search keywords..."
       class="search-box"
     />
-    <button @click="performSearch" class="search-button" :disabled="loading">
-      {{ loading ? '検索中...' : '検索 / Search' }}
-    </button>
   </div>
 
   <div class="results-area">
@@ -39,8 +35,8 @@
     </div>
     
     <div v-else style="text-align: center; color: #999; padding: 20px;">
-      上の検索ボックスにキーワードを入力して検索してください<br>
-      Enter keywords in the search box above to search
+      検索キーワードを入力すると自動で検索されます<br>
+      Search results will appear automatically as you type
     </div>
   </div>
 </div>
@@ -56,13 +52,32 @@ createApp({
       totalResults: 0,
       loading: false,
       error: null,
-      hasSearched: false
+      hasSearched: false,
+      searchTimeout: null
+    }
+  },
+  watch: {
+    searchQuery(newQuery) {
+      if (this.searchTimeout) {
+        clearTimeout(this.searchTimeout);
+      }
+      
+      if (!newQuery.trim()) {
+        this.results = [];
+        this.totalResults = 0;
+        this.error = null;
+        this.hasSearched = false;
+        return;
+      }
+      
+      this.searchTimeout = setTimeout(() => {
+        this.performSearch();
+      }, 300);
     }
   },
   methods: {
     async performSearch() {
       if (!this.searchQuery.trim()) {
-        this.error = '検索キーワードを入力してください / Please enter search keywords';
         return;
       }
 

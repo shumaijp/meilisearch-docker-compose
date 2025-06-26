@@ -1,6 +1,6 @@
 # MeiliSearch Docker Compose Environment
 
-A complete Docker Compose environment with MeiliSearch, Ruby on Rails webapp, and data loader for searching Akutagawa Ryunosuke's stories.
+A complete Docker Compose environment with MeiliSearch, Ruby on Rails webapp, and data loader for searching story text.
 
 ## Components
 
@@ -25,7 +25,7 @@ A complete Docker Compose environment with MeiliSearch, Ruby on Rails webapp, an
 ## Features
 
 - Bilingual search interface (Japanese/English)
-- Full-text search of Akutagawa's story text
+- Full-text search of story text
 - Responsive Vue.js frontend
 - Automatic data loading from Aozora Bunko
 - Docker Compose orchestration
