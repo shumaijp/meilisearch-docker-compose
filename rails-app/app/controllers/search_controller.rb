@@ -31,7 +31,7 @@ class SearchController < ApplicationController
       
       # Perform search
       response = HTTParty.post(
-        "#{meilisearch_url}/indexes/akutagawa_stories/search",
+        "#{meilisearch_url}/indexes/alice_stories/search",
         headers: {
           'Authorization' => "Bearer #{meilisearch_key}",
           'Content-Type' => 'application/json'
